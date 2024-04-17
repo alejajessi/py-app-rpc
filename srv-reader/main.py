@@ -53,10 +53,10 @@ def main():
             print(delayed_reply)
 
         elif rpc_input == "4":
-            print("This is a both streaming rpc implementation (InteractingHello)")
+            print("This is a bidirectional streaming rpc implementation (InteractingHello)")
             replies =stub.InteractingHello(get_reader_stream_requests())
             for reply in replies:
-                print("The result of client streaming rpc implementation is :")
+                print("The result of bidirectional streaming rpc implementation is :")
                 print(reply)
 
 

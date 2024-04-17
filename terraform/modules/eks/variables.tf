@@ -1,8 +1,14 @@
 variable "env" {
     type = string
     description = "Environment to be deployed"
-    default = "dev"
+    default = ""
 }
+
+variable "cluster_version" {
+    type = string
+    description = "Cluster version"
+}
+
 
 variable "name" {
     type = string
