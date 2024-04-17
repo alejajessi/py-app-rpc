@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+service RcpTypes {
+
+    // Basic
+    rpc NothingMessage(EmptyMessage) returns (MessageReply);
+
+	// Unary
+	rpc SayHello (HelloRequest) returns (HelloReply);
+
+	// Server Streaming
+	rpc ParrotSaysHello (HelloRequest) returns (stream HelloReply);
+	
+	// Client Streaming
+	rpc ChattyClientSaysHello (stream HelloRequest) returns (DelayedReply);
+
+	// Both Streaming
+	rpc InteractingHello (stream HelloRequest) returns (stream HelloReply);
+}
+
+message HelloRequest {
+  string name = 1;
+  string greeting = 2;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
+message DelayedReply {
+	string message = 1;
+	repeated HelloRequest request = 2;
+}
+
+message EmptyMessage{}
+
+message MessageReply {
+    string ack = 1;
+}
