@@ -24,6 +24,6 @@ module "eks" {
   tags = {
     Environment = "${var.env}"
     Terraform   = "true"
-    Name = "${var.env}-py-app"
+    Name        = "${var.env}-py-app"
   }
 }
