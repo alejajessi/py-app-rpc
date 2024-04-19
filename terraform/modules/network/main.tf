@@ -9,7 +9,7 @@ module "vpc" {
   public_subnets  = var.public_subnets
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "${var.env}"
   }
 }
