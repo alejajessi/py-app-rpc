@@ -1,0 +1,27 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    LOCAL_SECRET_VAR: "dev-py-app-ecr-secret:ecr_url"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+  pre_build:
+    commands:
+      - echo "Installing dependencies"
+      - pip3 install ./app/requirements.txt
+
+  build:
+    commands:
+      - echo "Building Docker Image Grcp server"
+      - docker build ./app/srv-server/ -t "$DOCKER_USERNAME/py-app-server"
+      - docker push "$DOCKER_USERNAME/py-app-server"
+      - echo "Create pb2 files"
+      - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/generated/ --grpc_python_out=./app/generated/ ./app/proto/rpc.proto
+      - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin .dkr.ecr.us-east-1.amazonaws.com
+
+  post_build:
+    commands:
+      - echo "Nothing to do in the post_build for now"

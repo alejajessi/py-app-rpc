@@ -9,6 +9,10 @@ variable "cluster_version" {
   description = "Cluster version"
 }
 
+variable "name_ecr" {
+  type        = string
+  description = "Name of the ECR repository"
+}
 
 variable "name" {
   type        = string
@@ -27,8 +31,24 @@ variable "subnets" {
   default     = []
 }
 
+variable "security_group" {
+  type        = string
+  description = "Security group ID of the cluster"
+}
+
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC where the cluster security group will be provisioned"
   default     = null
 }
+
+variable "codebuild_role_policy" {
+  type        = string
+  description = "Code Build JSON data policy"
+}
+
+variable "codebuild_role_name" {
+  type        = string
+  description = "Code Build IAM role name"
+}
+
