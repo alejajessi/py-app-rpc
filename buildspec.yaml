@@ -21,11 +21,16 @@ phases:
       - echo "Create pb2 files"
       - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/generated/ --grpc_python_out=./app/generated/ ./app/proto/rpc.proto
       - echo "Create docker image"
-      - docker build -t $ECR_URL:latest .
+      - docker build -t $ECR_URL:server-latest ./app/srv-server/
+      - docker build -t $ECR_URL:client-latest ./app/srv-client/
       - echo "Log in ecr"
       - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:latest
-
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:server-latest
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:client-latest
+      - aws eks --region us-east-1 update-kubeconfig --name dev-py-app-eks --alias dev-py-app-eks
+      - kubectl apply -f ./kubernetes/rpc_client.yaml
+      - kubectl apply -f ./kubernetes/rpc_server.yaml
+      
 
   post_build:
     commands:

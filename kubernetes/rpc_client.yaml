@@ -5,29 +5,29 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: grpcserver
+  name: grpcclient
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grpcserver
-  namespace: grpcserver
+  name: grpcclient
+  namespace: grpcclient
 spec:
   selector:
     matchLabels:
-      app: grpcserver
+      app: grpcclient
   replicas: 1
   template:
     metadata:
       labels:
-        app: grpcserver
+        app: grpcclient
     spec:
       containers:
-      - name: grpc-demo
+      - name: grpc-client
         image: ${ECR_URL}
         imagePullPolicy: Always
         ports:
-        - name: grpc-api
+        - name: grpc-client
           containerPort: 9000
         env:
         - name: POD_IP
@@ -39,8 +39,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: grpcserver
-  namespace: grpcserver
+  name: grpcclient
+  namespace: grpcclient
 spec:
   # bypass kube-proxy
   ports:
@@ -49,7 +49,7 @@ spec:
     targetPort: 9000
   clusterIP: None
   selector:
-    app: grpcserver
+    app: grpclient
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -60,22 +60,21 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/certificate-arn: ${ACM_ARN}
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
   labels:
-    app: grpcserver
+    app: grpcclient
     environment: dev
-  name: grpcserver
-  namespace: grpcserver
+  name: grpcclient
+  namespace: grpcclient
 spec:
   ingressClassName: alb
   rules:
-    host: ${DNS_HOSTNAME}
+    ##host: ${DNS_HOSTNAME}
     http:
       paths:
       - backend:
           service:
-            name: grpcserver
+            name: grpcclient
             port:
               number: 9000
         path: /
