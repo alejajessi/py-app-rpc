@@ -26,6 +26,7 @@ phases:
       - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
       - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:latest
 
+
   post_build:
     commands:
       - echo "Nothing to do in the post_build for now"
