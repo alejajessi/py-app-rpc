@@ -1,8 +1,10 @@
 version: 0.2
 
 env:
+  variables:
+    ACCOUNT_ID: ${aws:accountId}
   secrets-manager:
-    LOCAL_SECRET_VAR: "dev-py-app-ecr-secret:ecr_url"
+    ECR_URL: "dev-py-app-ecr-secret:ecr_url"
 
 phases:
   install:
@@ -15,12 +17,13 @@ phases:
 
   build:
     commands:
-      - echo "Building Docker Image Grcp server"
-      - docker build ./app/srv-server/ -t "$DOCKER_USERNAME/py-app-server"
-      - docker push "$DOCKER_USERNAME/py-app-server"
       - echo "Create pb2 files"
       - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/generated/ --grpc_python_out=./app/generated/ ./app/proto/rpc.proto
-      - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin .dkr.ecr.us-east-1.amazonaws.com
+      - echo "Create docker image"
+      - docker build -t $ECR_URL:<Tag> .
+      - echo "Log in ecr"
+      - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:1.0
 
   post_build:
     commands:
