@@ -5,7 +5,8 @@ COPY ./ /home/app
 WORKDIR /home/app
 
 RUN pip3.12 install --upgrade pip
-RUN pip3.12 install -r requirements.txt
+RUN pip3.12 install grpcio==1.62.1
+RUN pip3.12 install grpcio-tools==1.62.1
 RUN python -m venv dev
 RUN . dev/bin/activate
 

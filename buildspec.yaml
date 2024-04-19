@@ -4,7 +4,7 @@ env:
   variables:
     ACCOUNT_ID: ${aws:accountId}
   secrets-manager:
-    ECR_URL: "dev-py-app-ecr-secret:ecr_url"
+    ECR_URL: "py-app-ecr-secret:ecr_url"
 
 phases:
   install:
@@ -13,17 +13,19 @@ phases:
   pre_build:
     commands:
       - echo "Installing dependencies"
-      - pip3 install ./app/requirements.txt
+      - pip3.12 install grpcio-tools==1.62.1
+      - pip3.12 install grpcio==1.62.1
 
   build:
     commands:
       - echo "Create pb2 files"
       - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/generated/ --grpc_python_out=./app/generated/ ./app/proto/rpc.proto
       - echo "Create docker image"
-      - docker build -t $ECR_URL:<Tag> .
+      - docker build -t $ECR_URL:latest .
       - echo "Log in ecr"
       - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:1.0
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:latest
+
 
   post_build:
     commands:
