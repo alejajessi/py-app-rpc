@@ -13,6 +13,7 @@ phases:
   pre_build:
     commands:
       - echo "Installing dependencies"
+      - echo $ECR_URL
       - pip3.12 install grpcio-tools==1.62.1
       - pip3.12 install grpcio==1.62.1
 
