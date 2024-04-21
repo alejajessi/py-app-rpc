@@ -1,5 +1,5 @@
-import rpc_pb2_grpc
-import rpc_pb2
+from generated import rpc_pb2
+from generated import rpc_pb2_grpc
 import grpc
 import time
 import enum
@@ -32,21 +32,49 @@ def create_stub():
     stub = rpc_pb2_grpc.RcpTypesStub(channel)
     return channel, stub
 
-# Define other RPC functions (perform_nothing_message, perform_unary_call, etc.)
+def perform_nothing_message(stub):
+    print ("Nothing Message")
+    empty_request = rpc_pb2.EmptyMessage()
+    empty_reply = stub.NothingMessage(empty_request)
+    print(empty_reply)
+
+def perform_unary_call(stub):
+    print ("Unary Message")
+    hello_request = rpc_pb2.HelloRequest(greeting = "Hello", name = "User")
+    hello_reply = stub.SayHello(hello_request)
+    print (hello_reply)
+
+def perform_server_streaming_call(stub):
+    print ("Server Streaming Message")
+    hello_request = rpc_pb2.HelloRequest(greeting = "Hello", name = "User")
+    hello_replies = stub.ParrotSaysHello(hello_request)
+    for hello_reply in hello_replies:
+        print("The result of server streaming rpc implementation is :")
+        print(hello_reply)
+
+def perform_client_streaming_call(stub):
+    print ("Client Streaming Message")
+    delayed_reply = stub.ChattyClientSaysHello(get_reader_stream_requests())
+    print (delayed_reply)
+
+def perform_bidirectional_streaming_call(stub):
+    print ("Bidirectional Streaming Message")
+    replies =stub.InteractingHello(get_reader_stream_requests())
+    for hello_reply in replies:
+        print("The result of bidirectional streaming rpc implementation is :")
+        print(hello_reply)
 
 def main():
     args = parse_arguments()
     rpc_type = RpcType(args.type)
-
-    operation_mapping = {
-        RpcType.BASIC: perform_nothing_message(),
-        RpcType.UNARY: perform_unary_call,
-        RpcType.SERVER_STREAMING: perform_server_streaming_call,
-        RpcType.CLIENT_STREAMING: perform_client_streaming_call,
-        RpcType.BIDIRECTIONAL_STREAMING: perform_bidirectional_streaming_call
-    }
-
     channel, stub = create_stub()
+    operation_mapping = {
+        RpcType.BASIC: perform_nothing_message(stub),
+        RpcType.UNARY: perform_unary_call(stub),
+        RpcType.SERVER_STREAMING: perform_server_streaming_call(stub),
+        RpcType.CLIENT_STREAMING: perform_client_streaming_call(stub),
+        RpcType.BIDIRECTIONAL_STREAMING: perform_bidirectional_streaming_call(stub)
+    }
     with channel:
         operation = operation_mapping.get(rpc_type)
         if operation:

@@ -10,4 +10,4 @@ RUN pip3.12 install grpcio-tools==1.62.1
 
 EXPOSE 5001
 
-CMD ["python3.12", "-u", "main.py"]
+RUN python3 main.py --type 0

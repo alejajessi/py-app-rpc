@@ -30,5 +30,4 @@ variable "env" {
 variable "cidr" {
   type        = string
   description = "The IPv4 CIDR block for the VPC"
-  default     = "10.0.0.0/16"
 }
