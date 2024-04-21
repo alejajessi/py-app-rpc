@@ -1,11 +1,5 @@
 version: 0.2
 
-env:
-  variables:
-    ACCOUNT_ID: ${aws:accountId}
-  secrets-manager:
-    ECR_URL: "py-app-ecr-secret:ecr_url"
-
 phases:
   install:
     runtime-versions:
@@ -16,22 +10,26 @@ phases:
       - echo $ECR_URL
       - pip3.12 install grpcio-tools==1.62.1
       - pip3.12 install grpcio==1.62.1
+      - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/srv-client/generated/ --grpc_python_out=./app/srv-client/generated/ ./app/proto/rpc.proto
+      - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/srv-server/generated/ --grpc_python_out=./app/srv-server/generated/ ./app/proto/rpc.proto
 
   build:
     commands:
-      - echo "Create pb2 files"
-      - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/generated/ --grpc_python_out=./app/generated/ ./app/proto/rpc.proto
-      - echo "Create docker image"
+      - echo "Build docker images"
       - docker build -t $ECR_URL:server-latest ./app/srv-server/
       - docker build -t $ECR_URL:client-latest ./app/srv-client/
-      - echo "Log in ecr"
-      - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:server-latest
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/py-rcp-app:client-latest
+      - aws ecr get-login-password --region us-east-1 --no-cli-auto-prompt | docker login --username AWS --password-stdin $ECR_URL
+      - echo "Create tag docker"
+      - docker tag $ECR_URL:server-latest $ECR_URL/server-latest
+      - docker tag $ECR_URL:client-latest $ECR_URL/client-latest
+      - echo "Push docker images"
+      - docker push $ECR_URL:server-latest
+      - docker push $ECR_URL:server-latest
+      - echo "Config EKS env"
       - aws eks --region us-east-1 update-kubeconfig --name dev-py-app-eks --alias dev-py-app-eks
+      - echo "Apply workflows"
       - kubectl apply -f ./kubernetes/rpc_client.yaml
       - kubectl apply -f ./kubernetes/rpc_server.yaml
-      
 
   post_build:
     commands:

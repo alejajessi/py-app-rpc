@@ -1,0 +1,7 @@
+services:
+    srv_server:
+        build:
+            context: ./app/srv-server/
+            dockerfile: ./Dockerfile
+        ports:
+            - "50051:50051"

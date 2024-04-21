@@ -69,7 +69,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    ##host: ${DNS_HOSTNAME}
+    host: ${DNS_HOSTNAME}
     http:
       paths:
       - backend:

@@ -1,6 +1,6 @@
 import grpc
-import rpc_pb2
-import rpc_pb2_grpc
+from generated import rpc_pb2
+from generated import rpc_pb2_grpc
 import time
 from concurrent import futures
 ## virtual env local para probar local 
