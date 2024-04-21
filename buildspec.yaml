@@ -7,6 +7,7 @@ phases:
   pre_build:
     commands:
       - echo "Installing dependencies"
+      - echo $ECR_URL
       - pip3.12 install grpcio-tools==1.62.1
       - pip3.12 install grpcio==1.62.1
       - python3 -m grpc_tools.protoc -I ./app/proto --python_out=./app/srv-client/generated/ --grpc_python_out=./app/srv-client/generated/ ./app/proto/rpc.proto
