@@ -125,11 +125,6 @@ resource "aws_codebuild_project" "py-app" {
     type = "NO_ARTIFACTS"
   }
 
-##  cache {
-##    type  = "LOCAL"
-##    modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
-##  }
-
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
     image                       = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"

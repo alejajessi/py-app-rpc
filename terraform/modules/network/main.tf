@@ -8,8 +8,6 @@ module "vpc" {
   public_subnets  = var.public_subnets
   enable_nat_gateway     = true
   single_nat_gateway     = true
-  enable_ipv6            = true
-  create_egress_only_igw = true
 
   tags = {
     Terraform   = "true"

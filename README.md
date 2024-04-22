@@ -57,4 +57,11 @@ We've two modules into terraform directory:
 Those modules are linked because we're using the infrastructure created in network module for our eks cluster.
 
 In the network module, we've one child module `terraform-aws-modules/vpc/aws` and this is the [repository](https://github.com/terraform-aws-modules/terraform-aws-vpc) for that child module.
-But we configured some custom values:
+But we configured some custom values.In the network module, I created:
+- We're creating using a for lop our private and public subnets accoridng with the cidr input
+- We're not using ipv6 address, just using ipv4 for this reason we don't have any intra subnets.
+- We're enabling our nat gateway to allow sent traffic as output to internet.
+- But when we enable the flag `single_nat_gateway` to create just one nat gateway. If we want, we can omit this configuration because the vpc module is able to configure per default the number of nat gwateys.
+- Now, our configuration indicate that: "then all private subnets will route their Internet traffic through this single NAT gateway"
+
+And finally to allow SSH access in our cluster, I added one security group in the module eks (just for SSH eks cluster communication). If we want, we can move this block of code to network but I prefer leave here because it's related property with eks connection.
